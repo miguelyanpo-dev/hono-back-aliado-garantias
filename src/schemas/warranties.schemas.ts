@@ -1,63 +1,15 @@
 import { z } from 'zod';
-import { SuccessResponse, ErrorResponse } from './sellers.schemas';
 
-/**
- * Query params reales de Aliado
- */
-export const WarrantiesQuerySchema = z.object({
-  page: z.coerce.number().optional(),
-  itemsPerPage: z.coerce.number().optional(),
-  identification: z.string().optional(),
+export const CreateWarrantySchema = z.object({
+  customer_id: z.string(),
+  customer_name: z.string(),
+  customer_identification: z.number(),
+  customer_email: z.string().email().nullable(),
+  customer_cellphone: z.string().nullable(),
+
+  seller_id: z.string(),
+  seller_name: z.string(),
+
+  status: z.string(),
+  is_active: z.boolean(),
 });
-
-/**
- * Modelo de Contacto (People)
- */
-export const WarrantiesSchema = z.object({
-  id: z.string(),
-  kind: z.literal('Person'),
-  identificationType: z.string(),
-  identification: z.string(),
-
-  firstName: z.string(),
-  secondName: z.string().nullable().optional(),
-  firstSurname: z.string(),
-  secondSurname: z.string().nullable().optional(),
-
-  companyName: z.string().nullable().optional(),
-
-  phoneMobile: z.string().nullable().optional(),
-  phoneWork: z.string().nullable().optional(),
-
-  isCustomer: z.boolean(),
-  isSupplier: z.boolean(),
-  isEmployee: z.boolean(),
-  isSeller: z.boolean(),
-
-  email: z.string().nullable().optional(),
-  emails: z.array(z.any()),
-
-  addressBillingName: z.string().nullable().optional(),
-  addressBillingLine: z.string().nullable().optional(),
-  addressBillingCountryCode: z.string().nullable().optional(),
-  addressBillingRegion: z.string().nullable().optional(),
-  addressBillingCity: z.string().nullable().optional(),
-
-  addressShippingName: z.string().nullable().optional(),
-  addressShippingLine: z.string().nullable().optional(),
-  addressShippingCountryCode: z.string().nullable().optional(),
-  addressShippingRegion: z.string().nullable().optional(),
-  addressShippingCity: z.string().nullable().optional(),
-});
-
-/**
- * Response de listado
- */
-export const WarrantiesListResponse = SuccessResponse.extend({
-  data: z.array(WarrantiesSchema),
-});
-
-export {
-  SuccessResponse,
-  ErrorResponse,
-};
