@@ -18,7 +18,7 @@ export const getContacts = async (c: Context) => {
   } catch (error) {
     return c.json({
       success: false,
-      error: 'Error al obtener contactos',
+      error: 'Error al obtener garantias',
       message: String(error),
     }, 500);
   }

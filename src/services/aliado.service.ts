@@ -30,7 +30,7 @@ export class AliadoService {
     return await response.json();
   }
   /**
- * Obtiene la lista de contactos (people) desde Aliado
+ * Obtiene la lista de garantias (people) desde Aliado
  */
   static async getContacts(params: {
     page?: number;

@@ -12,15 +12,15 @@ const contactsRouter = new OpenAPIHono();
 const getContactsRoute = createRoute({
   method: 'get',
   path: '/',
-  tags: ['Contactos de aliado'],
-  summary: 'Listar contactos',
-  description: 'Obtiene contactos (people) desde la API de Aliado.',
+  tags: ['garantias de aliado'],
+  summary: 'Listar garantias',
+  description: 'Obtiene garantias (people) desde la API de Aliado.',
   request: {
     query: ContactsQuerySchema,
   },
   responses: {
     200: {
-      description: 'Lista de contactos obtenida exitosamente',
+      description: 'Lista de garantias obtenida exitosamente',
       content: {
         'application/json': {
           schema: ContactsListResponse,
@@ -28,7 +28,7 @@ const getContactsRoute = createRoute({
       },
     },
     500: {
-      description: 'Error al obtener contactos',
+      description: 'Error al obtener garantias',
       content: {
         'application/json': {
           schema: ErrorResponse,
