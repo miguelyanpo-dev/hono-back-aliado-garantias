@@ -1,6 +1,7 @@
 import { Context } from 'hono';
 import { z } from 'zod';
 import { WarrantiesService } from '../../services/warranties.service';
+import { getDb } from '../../config/db';
 
 const DeleteWarrantyBodySchema = z
   .object({
@@ -10,6 +11,12 @@ const DeleteWarrantyBodySchema = z
   .optional();
 
 export const deleteWarranty = async (c: Context) => {
+  const ref = c.req.query('ref')?.trim();
+  if (ref && process.env.NODE_ENV === 'production' && process.env.ENABLE_DB_REF !== 'true') {
+    return c.json({ success: false, error: 'Not Found' }, 404);
+  }
+  const db = getDb(ref);
+
   const idParam = c.req.param('id');
   const id = Number(idParam);
 
@@ -30,7 +37,7 @@ export const deleteWarranty = async (c: Context) => {
     );
   }
 
-  const data = await WarrantiesService.deactivate(id, parsed.data);
+  const data = await WarrantiesService.deactivate(db, id, parsed.data);
   if (!data) {
     return c.json(
       { success: false, error: 'Not Found', message: 'Warranty not found' },

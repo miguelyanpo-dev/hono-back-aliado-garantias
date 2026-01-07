@@ -1,7 +1,7 @@
-import { db } from '../config/db';
+import type { Pool } from 'pg';
 
 export class WarrantiesService {
-  static async getAll() {
+  static async getAll(db: Pool) {
     const { rows } = await db.query(
       `SELECT *
        FROM warranties
@@ -10,7 +10,7 @@ export class WarrantiesService {
     return rows;
   }
 
-  static async getPaginated(filters: {
+  static async getPaginated(db: Pool, filters: {
     page: number;
     limit: number;
     customer_name?: string;
@@ -75,14 +75,14 @@ export class WarrantiesService {
     return { rows, total };
   }
 
-  static async getById(id: number) {
+  static async getById(db: Pool, id: number) {
     const { rows } = await db.query(
       `SELECT * FROM warranties WHERE id = $1`,
       [id]
     );
     return rows[0];
   }
-  static async create(data: any) {
+  static async create(db: Pool, data: any) {
     const { rows } = await db.query(
       `
       INSERT INTO warranties (
@@ -118,7 +118,7 @@ export class WarrantiesService {
     return rows[0];
   }
 
-  static async update(id: number, data: any) {
+  static async update(db: Pool, id: number, data: any) {
     const { rows } = await db.query(
       `
       UPDATE warranties
@@ -161,7 +161,7 @@ export class WarrantiesService {
     return rows[0];
   }
 
-  static async deactivate(id: number, userUpdated?: { user_updated_name?: string; user_updated_id?: string }) {
+  static async deactivate(db: Pool, id: number, userUpdated?: { user_updated_name?: string; user_updated_id?: string }) {
     const { rows } = await db.query(
       `
       UPDATE warranties

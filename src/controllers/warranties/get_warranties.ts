@@ -1,8 +1,15 @@
 import { Context } from 'hono';
 import { WarrantiesService } from '../../services/warranties.service';
 import { GetWarrantiesQuerySchema } from '../../schemas/warranties.schemas';
+import { getDb } from '../../config/db';
 
 export const getWarranties = async (c: Context) => {
+  const ref = c.req.query('ref')?.trim();
+  if (ref && process.env.NODE_ENV === 'production' && process.env.ENABLE_DB_REF !== 'true') {
+    return c.json({ success: false, error: 'Not Found' }, 404);
+  }
+  const db = getDb(ref);
+
   const url = new URL(c.req.url);
   const queryObj: Record<string, string> = {};
   url.searchParams.forEach((value, key) => {
@@ -21,7 +28,7 @@ export const getWarranties = async (c: Context) => {
   const limitRequested = Number(parsed.data.limit ?? 20);
   const limit = Math.min(20, Math.max(1, limitRequested));
 
-  const { rows, total } = await WarrantiesService.getPaginated({
+  const { rows, total } = await WarrantiesService.getPaginated(db, {
     page,
     limit,
     customer_name: parsed.data.customer_name,

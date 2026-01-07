@@ -4,7 +4,7 @@ import { swaggerUI } from '@hono/swagger-ui';
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { logger } from './middlewares/logger';
 import { config } from './config/config';
-import { db } from './config/db';
+import { getDb } from './config/db';
 import warrantiesRouter from './routes/warranties.routes';
 import { lookup } from 'node:dns/promises';
 
@@ -114,7 +114,15 @@ apiV1.get('/env', (c) => {
 });
 
 apiV1.get('/db/ping', async (c) => {
-  const databaseUrl = process.env.DATABASE_URL?.trim();
+  const ref = c.req.query('ref')?.trim();
+  if (ref && process.env.NODE_ENV === 'production' && process.env.ENABLE_DB_REF !== 'true') {
+    return c.json({ success: false, error: 'Not Found' }, 404);
+  }
+
+  const databaseUrl = ref
+    ? `${process.env.DATABASE_BASE ?? ''}${ref}${process.env.DOS_PUNTOS?.trim() || ':'}${process.env.DATABASE_PASSWORD ?? ''}${process.env.DATABASE_HOST ?? ''}`
+    : process.env.DATABASE_URL?.trim();
+
   let databaseHost: string | null = null;
   let dnsLookup: unknown = null;
   let dnsError: string | null = null;
@@ -131,6 +139,7 @@ apiV1.get('/db/ping', async (c) => {
   }
 
   try {
+    const db = getDb(ref);
     const result = await db.query('SELECT 1 as ok');
     return c.json({
       success: true,
@@ -139,6 +148,7 @@ apiV1.get('/db/ping', async (c) => {
       diagnostics: {
         vercelEnv: process.env.VERCEL_ENV ?? null,
         vercelRegion: process.env.VERCEL_REGION ?? null,
+        ref: ref ?? null,
         databaseHost,
         dnsLookup,
         dnsError,
@@ -155,6 +165,7 @@ apiV1.get('/db/ping', async (c) => {
       diagnostics: {
         vercelEnv: process.env.VERCEL_ENV ?? null,
         vercelRegion: process.env.VERCEL_REGION ?? null,
+        ref: ref ?? null,
         databaseHost,
         dnsLookup,
         dnsError,

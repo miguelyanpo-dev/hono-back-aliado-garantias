@@ -8,6 +8,16 @@ const requiredEnv = (name: string) => {
   return value;
 };
 
+const dbPoolByRef = new Map<string, Pool>();
+
+const buildDatabaseUrlFromRef = (ref: string) => {
+  const base = requiredEnv('DATABASE_BASE');
+  const password = requiredEnv('DATABASE_PASSWORD');
+  const host = requiredEnv('DATABASE_HOST');
+  const colon = process.env.DOS_PUNTOS?.trim() || ':';
+  return `${base}${ref}${colon}${password}${host}`;
+};
+
 let localDatabaseUrl: string | undefined;
 try {
   const secrets = require('./secrets.local') as { LOCAL_DATABASE_URL?: string };
@@ -33,3 +43,16 @@ export const db = new Pool(
         ssl: { rejectUnauthorized: false },
       }
 );
+
+export const getDb = (ref?: string) => {
+  if (!ref) return db;
+
+  const normalized = ref.trim();
+  const cached = dbPoolByRef.get(normalized);
+  if (cached) return cached;
+
+  const connectionString = buildDatabaseUrlFromRef(normalized);
+  const pool = new Pool({ connectionString, ssl: { rejectUnauthorized: false } });
+  dbPoolByRef.set(normalized, pool);
+  return pool;
+};

@@ -1,8 +1,15 @@
 import { Context } from 'hono';
 import { WarrantiesService } from '../../services/warranties.service';
 import { UpdateWarrantySchema } from '../../schemas/warranties.schemas';
+import { getDb } from '../../config/db';
 
 export const updateWarranty = async (c: Context) => {
+  const ref = c.req.query('ref')?.trim();
+  if (ref && process.env.NODE_ENV === 'production' && process.env.ENABLE_DB_REF !== 'true') {
+    return c.json({ success: false, error: 'Not Found' }, 404);
+  }
+  const db = getDb(ref);
+
   const idParam = c.req.param('id');
   const id = Number(idParam);
 
@@ -23,7 +30,7 @@ export const updateWarranty = async (c: Context) => {
     );
   }
 
-  const data = await WarrantiesService.update(id, parsed.data);
+  const data = await WarrantiesService.update(db, id, parsed.data);
   if (!data) {
     return c.json(
       { success: false, error: 'Not Found', message: 'Warranty not found' },

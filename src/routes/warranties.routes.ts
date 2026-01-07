@@ -24,6 +24,10 @@ const DeleteWarrantyBodySchema = z.object({
   user_updated_id: z.string().optional(),
 });
 
+const RefQuerySchema = z.object({
+  ref: z.string().optional(),
+});
+
 router.openapi(
   createRoute({
     method: 'get',
@@ -67,6 +71,7 @@ router.openapi(
     path: '/{id}',
     request: {
       params: IdParamSchema,
+      query: RefQuerySchema,
     },
     responses: {
       200: {
@@ -111,6 +116,7 @@ router.openapi(
     method: 'post',
     path: '/',
     request: {
+      query: RefQuerySchema,
       body: {
         content: {
           'application/json': {
@@ -155,6 +161,7 @@ router.openapi(
     path: '/{id}',
     request: {
       params: IdParamSchema,
+      query: RefQuerySchema,
       body: {
         content: {
           'application/json': {
@@ -207,6 +214,7 @@ router.openapi(
     path: '/{id}',
     request: {
       params: IdParamSchema,
+      query: RefQuerySchema,
       body: {
         content: {
           'application/json': {
@@ -259,6 +267,7 @@ router.openapi(
     path: '/{id}',
     request: {
       params: IdParamSchema,
+      query: RefQuerySchema,
       body: {
         content: {
           'application/json': {

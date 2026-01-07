@@ -28,6 +28,7 @@ export const UpdateWarrantySchema = CreateWarrantySchema.partial().extend({
 });
 
 export const GetWarrantiesQuerySchema = z.object({
+  ref: z.string().optional(),
   page: z.union([z.string(), z.number()]).optional(),
   limit: z.union([z.string(), z.number()]).optional(),
   customer_name: z.string().optional(),
