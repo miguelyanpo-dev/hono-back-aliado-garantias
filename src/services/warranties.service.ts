@@ -95,53 +95,72 @@ export class WarrantiesService {
   }
 
   static async create(db: Pool, data: any) {
-    const { rows } = await db.query(
-      `
-      INSERT INTO warranties (
-        customer_id,
-        customer_name,
-        customer_identification,
-        customer_email,
-        customer_cellphone,
-        seller_id,
-        seller_name,
-        status,
-        is_active,
-        products_relation_ids,
-        notes_relation_ids,
-        user_created_date,
-        user_created_name,
-        user_created_id,
-        user_created_img
-      )
-      VALUES (
-        $1,$2,$3,$4,$5,
-        $6,$7,$8,$9,
-        $10,$11,
-        now(),$12,$13,$14
-      )
-      RETURNING *
-      `,
-      [
-        data.customer_id,
-        data.customer_name,
-        data.customer_identification,
-        data.customer_email ?? null,
-        data.customer_cellphone ?? null,
-        data.seller_id,
-        data.seller_name,
-        data.status,
-        data.is_active,
-        data.products_relation_ids ?? null,
-        data.notes_relation_ids ?? null,
-        data.user_created_name,
-        data.user_created_id,
-        data.user_created_img ?? null,
-      ]
-    );
+  const { rows } = await db.query(
+    `
+    INSERT INTO warranties (
+      customer_id,
+      customer_name,
+      customer_identification,
+      customer_email,
+      customer_cellphone,
+      seller_id,
+      seller_name,
+      status,
+      is_active,
+      products_relation_ids,
+      notes_relation_ids,
 
-    return rows[0];
-  }
+      user_created_date,
+      user_created_name,
+      user_created_id,
+      user_created_img,
+
+      user_updated_date,
+      user_updated_name,
+      user_updated_id,
+      user_updated_img,
+
+      user_updated_status_date,
+      user_updated_status_name,
+      user_updated_status_id,
+      user_updated_status_img
+    )
+    VALUES (
+      $1,$2,$3,$4,$5,
+      $6,$7,$8,$9,
+      $10,$11,
+
+      now(),$12,$13,$14,
+      now(),$12,$13,$14,
+      now(),$12,$13,$14
+    )
+    RETURNING *
+    `,
+    [
+      data.customer_id,
+      data.customer_name,
+      data.customer_identification,
+      data.customer_email ?? null,
+      data.customer_cellphone ?? null,
+
+      data.seller_id,
+      data.seller_name,
+      data.status,
+      data.is_active ?? true,
+
+      data.products_relation_ids ?? null,
+      data.notes_relation_ids ?? null,
+
+      // Auditoría (reutilizada)
+      data.user_created_name,
+      data.user_created_id,
+      data.user_created_img ?? null,
+    ]
+  );
+
+  return rows[0];
+}
+
 
   static async update(db: Pool, id: number, data: any) {
     const isStatusUpdate = data.status !== undefined;

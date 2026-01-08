@@ -17,16 +17,17 @@ export const CreateWarrantySchema = z.object({
   seller_name: z.string(),
 
   status: z.string(),
-  is_active: z.boolean().default(true),
+  is_active: z.boolean().optional().default(true),
 
   products_relation_ids: z.array(z.string()).optional(),
   notes_relation_ids: z.array(z.string()).optional(),
 
-  // Auditoría creación
+  // ✅ SOLO auditoría de creación
   user_created_name: z.string(),
   user_created_id: z.string(),
   user_created_img: z.string().optional(),
 });
+
 
 /**
  * ============================
